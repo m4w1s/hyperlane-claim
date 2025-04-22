@@ -257,6 +257,8 @@ async function getAllocation(address, proxy) {
 
         if (cookie) {
           vcrcs = cookie.replace(/^_vcrcs=/, '');
+        } else {
+          console.log(`[${ethers.getAddress(address)}] Cannot find _vcrcs cookie`, response.headers);
         }
 
         continue;
