@@ -250,6 +250,7 @@ async function getAllocation(address, proxy) {
             'x-vercel-challenge-solution': solution,
             'x-vercel-challenge-version': '2',
           },
+          proxyUrl: proxy,
           sessionToken,
         });
 
