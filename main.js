@@ -40,13 +40,17 @@ const solvium = new Solvium(CONFIG.SOLVIUM_API_KEY);
 const allocations = readAllocations();
 const wallets = readWallets();
 
-Promise
-  .allSettled(
-    wallets.map((wallet) => processWallet(wallet.wallet, wallet.withdrawAddress, wallet.proxy))
-  )
-  .then(() => {
-    console.log('All wallets processed!');
-  });
+(async () => {
+  for (const wallet of wallets) {
+    try {
+      await processWallet(wallet.wallet, wallet.withdrawAddress, wallet.proxy);
+
+      await sleep(CONFIG.DELAY_SECONDS.MIN, CONFIG.DELAY_SECONDS.MAX);
+    } catch {}
+  }
+
+  console.log('All wallets processed!');
+})();
 
 async function processWallet(wallet, withdrawAddress, proxy) {
   const allocation = await getAllocation(wallet.address, proxy);
@@ -384,7 +388,9 @@ function writeAllocations() {
   writeFileSync(new URL('./data/allocations.json', import.meta.url), data, 'utf8');
 }
 
-function sleep(ms) {
+function sleep(min, max) {
+  const ms = max != null ? Math.floor(Math.random() * (max - min) ) + min : min;
+
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
