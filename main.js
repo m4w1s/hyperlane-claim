@@ -218,10 +218,11 @@ async function getAllocation(address, proxy) {
   try {
     const sessionToken = {};
     let vcrcs;
+    let response;
     let body;
 
     for (let i = 3; i >= 0; i--) {
-      const response = await gotScraping.get({
+      response = await gotScraping.get({
         url: 'https://claim.hyperlane.foundation/api/claims',
         searchParams: {
           address: ethers.getAddress(address),
