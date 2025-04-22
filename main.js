@@ -268,7 +268,7 @@ async function getAllocation(address, proxy) {
     }
 
     if (!body) {
-      throw new Error('Malformed eligibility response: ' + body);
+      throw new Error(`Malformed eligibility response (status ${response.statusCode}): ` + body ?? response.rawBody?.toString('utf8'));
     }
 
     if (!body.response || !Array.isArray(body.response.claims) || !body.response.claims.length) {
@@ -291,7 +291,7 @@ async function getAllocation(address, proxy) {
     };
 
     if (!allocation.chainId || !allocation.index || !allocation.address || !allocation.amount || !allocation.proof) {
-      throw new Error('Malformed eligibility response: ' + body);
+      throw new Error(`Malformed eligibility response (status ${response.statusCode}): ` + body ?? response.rawBody?.toString('utf8'));
     }
   } catch (e) {
     if (!e.silent) {
