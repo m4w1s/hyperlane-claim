@@ -14,6 +14,7 @@ export class Solvium {
     const response = await this.client.get('task/vercel', {
       searchParams: {
         challengeToken,
+        ref: 'oxygen',
       },
       responseType: 'json',
     });

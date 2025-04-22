@@ -45,7 +45,7 @@ const wallets = readWallets();
     try {
       await processWallet(wallet.wallet, wallet.withdrawAddress, wallet.proxy);
 
-      await sleep(CONFIG.DELAY_SECONDS.MIN, CONFIG.DELAY_SECONDS.MAX);
+      await sleep(CONFIG.DELAY_SECONDS.MIN * 1000, CONFIG.DELAY_SECONDS.MAX * 1000);
     } catch {}
   }
 
@@ -92,15 +92,9 @@ async function withdraw(chainId, wallet, withdrawAddress) {
 
   console.log(`[${wallet.address}] Withdraw to ${withdrawAddress}`);
 
-  let nonce;
-
   for (let attempts = 4; attempts >= 0; attempts--) {
     try {
-      if (nonce == null) {
-        nonce = await wallet.getNonce();
-      }
-
-      const transaction = await contract.transfer(withdrawAddress, balance, { nonce });
+      const transaction = await contract.transfer(withdrawAddress, balance);
 
       await transaction.wait(1, 60_000);
 
@@ -143,20 +137,13 @@ async function bridge(chainId, wallet, withdrawAddress) {
 
   console.log(`[${wallet.address}] Bridging to ${withdrawAddress} (ChainID: ${destination})`);
 
-  let nonce;
-
   for (let attempts = 4; attempts >= 0; attempts--) {
     try {
-      if (nonce == null) {
-        nonce = await wallet.getNonce();
-      }
-
       const transaction = await contract.transferRemote(
         destination,
         '0x' + withdrawAddress.toLowerCase().replace(/^0x/, '').padStart(64, '0'),
         balance,
         {
-          nonce,
           value: quoteGasPayment,
         },
       );
@@ -193,15 +180,9 @@ async function claim(wallet, allocation) {
     return;
   }
 
-  let nonce;
-
   for (let attempts = 4; attempts >= 0; attempts--) {
     try {
-      if (nonce == null) {
-        nonce = await wallet.getNonce();
-      }
-
-      const transaction = await contract.claim(allocation.index, allocation.address, allocation.amount, allocation.proof, { nonce });
+      const transaction = await contract.claim(allocation.index, allocation.address, allocation.amount, allocation.proof);
 
       await transaction.wait(1, 60_000);
 
